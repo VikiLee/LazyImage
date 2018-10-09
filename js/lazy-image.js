@@ -1,7 +1,7 @@
 class LazyImage {
-    constructor() {
+    constructor(selector) {
       // 懒记载图片列表，将伪数组转为数组，以便可以使用数组的api
-      this.imageElements = Array.prototype.slice.call(document.querySelectorAll('.lazy-image'))
+      this.imageElements = Array.prototype.slice.call(document.querySelectorAll(selector))
       this.init()
     }
   

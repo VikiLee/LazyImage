@@ -20,9 +20,7 @@
 <link href="./css/style.css" rel="stylesheet"/>
 <script src="js/lazy-image.js"></script>
 <script>
- window.onload = function() {
-  new LazyImage()
-}
-
+  console.log(document.documentElement.clientHeight)
+  new LazyImage('.lazy-image')
 </script>
 </html>
