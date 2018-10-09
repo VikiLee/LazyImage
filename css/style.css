@@ -1,0 +1,23 @@
+html,body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+}
+
+#view {
+  color: red;
+  width: 200px;
+  height: 300px
+}
+
+.lazy-image {
+  background: url('../img/loading.gif') no-repeat center;
+}
+
+img{
+  margin-top: 100px;
+  background-size: cover;
+  background-position: center;
+  width: 490px;
+  height: 242px;
+}
