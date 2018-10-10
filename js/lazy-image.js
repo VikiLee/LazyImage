@@ -6,41 +6,21 @@ class LazyImage {
     }
   
     inViewShow() {
-      // 通过IntersectionObserver api判断图片是否出现在可视区域内
-      if ("IntersectionObserver" in window) {
-        let lazyImageObserver = new IntersectionObserver((entries, observer) => {
-          entries.forEach((entry, index) => {
-            // 如果图片元素可见
-            if (entry.isIntersecting) {
-              let lazyImage = entry.target
-              lazyImage.src = lazyImage.dataset.src
-              lazyImage.classList.remove("lazy-image")
-              lazyImageObserver.unobserve(lazyImage)
-              this.lazyImages.splice(index, 1)
-            }
-          });
-        });
-    
-        this.lazyImages.forEach(function(lazyImage) {
-          lazyImageObserver.observe(lazyImage);
-        });
-      } else {
-        // 不支持IntersectionObserver api的情况下判断图片是否出现在可视区域内
-        let len = this.lazyImages.length
-        for(let i = 0; i < len; i++) {
-          let lazyImage = this.lazyImages[i]
-          const rect = lazyImage.getBoundingClientRect()
-          // 出现在视野的时候加载图片
-          if(rect.top < document.documentElement.clientHeight) {
-            lazyImage.src = lazyImage.dataset.src
-            // 移除掉已经显示的
-            this.lazyImages.splice(i, 1)
-            len--
-            i--
-            if(this.lazyImages.length === 0) {
-              // 如果全部都加载完 则去掉滚动事件监听
-              document.removeEventListener('scroll', this._throttleFn)
-            }
+      // 不支持IntersectionObserver api的情况下判断图片是否出现在可视区域内
+      let len = this.lazyImages.length
+      for(let i = 0; i < len; i++) {
+        let lazyImage = this.lazyImages[i]
+        const rect = lazyImage.getBoundingClientRect()
+        // 出现在视野的时候加载图片
+        if(rect.top < document.documentElement.clientHeight) {
+          lazyImage.src = lazyImage.dataset.src
+          // 移除掉已经显示的
+          this.lazyImages.splice(i, 1)
+          len--
+          i--
+          if(this.lazyImages.length === 0) {
+            // 如果全部都加载完 则去掉滚动事件监听
+            document.removeEventListener('scroll', this._throttleFn)
           }
         }
       }
@@ -69,8 +49,27 @@ class LazyImage {
     }
   
     init() {
-      this.inViewShow()
-      this._throttleFn = this.throttle(this.inViewShow)
-      document.addEventListener('scroll', this._throttleFn)
+      // 通过IntersectionObserver api判断图片是否出现在可视区域内，不需要监听Scroll来判断
+      if ("IntersectionObserver" in window) {
+        let lazyImageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry, index) => {
+            // 如果元素可见
+            if (entry.isIntersecting) {
+              let lazyImage = entry.target
+              lazyImage.src = lazyImage.dataset.src
+              lazyImageObserver.unobserve(lazyImage)
+              // this.lazyImages.splice(index, 1)
+            }
+          })
+        })
+        this.lazyImages.forEach(function(lazyImage) {
+          lazyImageObserver.observe(lazyImage);
+        })
+      } else {
+        this.inViewShow()
+        this._throttleFn = this.throttle(this.inViewShow)
+        document.addEventListener('scroll', this._throttleFn)
+      }
+      
     }
   }
